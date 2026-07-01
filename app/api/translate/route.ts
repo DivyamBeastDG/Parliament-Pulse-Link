@@ -1,45 +1,37 @@
 import { NextRequest, NextResponse } from 'next/server';
+import OpenAI from 'openai';
+
+const client = new OpenAI({
+  baseURL: "https://openrouter.ai/api/v1",
+  apiKey: process.env.OPENROUTER_API_KEY,
+  defaultHeaders: {
+    'HTTP-Referer': process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000',
+    'X-Title': 'Parliament Pulse Link',
+  }
+});
 
 export async function POST(req: NextRequest) {
   try {
     const { text, targetLang } = await req.json();
     if (!text) return NextResponse.json({ error: 'Text is required' }, { status: 400 });
 
-    // Map our frontend codes to natural language names for the AI prompt
-    const langNames: Record<string, string> = { 
-      'hi': 'Hindi', 
-      'gar': 'Garhwali', 
-      'kum': 'Kumaoni' 
-    };
+    const langNames: Record<string, string> = { 'hi': 'Hindi', 'gar': 'Garhwali', 'kum': 'Kumaoni' };
     const targetLanguageName = langNames[targetLang] || 'Hindi';
 
-    const groqRes = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: process.env.GROQ_MODEL || 'llama-3.3-70b-versatile',
-        messages: [
-          { 
-            role: 'system', 
-            content: `You are an expert Indian linguist and legislative translator. Translate the following English text into ${targetLanguageName}. Return ONLY the translated text, nothing else. Keep the tone professional, natural, and easy for a common citizen to understand.` 
-          },
-          { role: 'user', content: text }
-        ],
-        temperature: 0.3,
-      }),
+    const completion = await client.chat.completions.create({
+      model: process.env.QWEN_MODEL || "qwen/qwen-2.5-72b-instruct",
+      messages: [
+        { role: 'system', content: `You are an expert Indian linguist and translator. Translate the following text into ${targetLanguageName}. Return ONLY the translated text, nothing else. Maintain a professional, citizen-friendly tone.` },
+        { role: 'user', content: text }
+      ],
+      temperature: 0.3,
     });
 
-    const groqData = await groqRes.json();
-    if (groqData.choices?.[0]?.message?.content) {
-      return NextResponse.json({ translatedText: groqData.choices[0].message.content });
-    }
+    const translatedText = completion.choices[0].message.content || text;
+    return NextResponse.json({ translatedText });
 
-    return NextResponse.json({ translatedText: text });
   } catch (error) {
-    console.error('Translation Route Error:', error);
+    console.error('Translation Error:', error);
     return NextResponse.json({ error: 'Translation failed' }, { status: 500 });
   }
 }
