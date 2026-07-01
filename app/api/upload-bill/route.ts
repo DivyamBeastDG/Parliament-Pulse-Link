@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 import OpenAI from 'openai';
-import { extractText } from 'unpdf'; // ✨ New modern import
+import { extractText } from 'unpdf'; 
 
-// Initialize Qwen via OpenRouter
 const client = new OpenAI({
   baseURL: "https://openrouter.ai/api/v1",
   apiKey: process.env.OPENROUTER_API_KEY,
@@ -24,19 +23,17 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Please upload a valid PDF file.' }, { status: 400 });
     }
 
-    // 1. Extract text using unpdf (Must use Uint8Array)
     const arrayBuffer = await file.arrayBuffer();
     const uint8Array = new Uint8Array(arrayBuffer);
     const { text } = await extractText(uint8Array);
     
-    // ✨ FIX: unpdf returns an array of strings (one per page), so we join them!
     const fullText = Array.isArray(text) ? text.join(' ') : text;
-    const cleanText = fullText.substring(0, 6000); // Limit to avoid AI token limits
+    const cleanText = fullText.substring(0, 6000); 
+
     if (!cleanText || cleanText.trim().length < 50) {
       return NextResponse.json({ error: 'Could not read text from this PDF. Ensure it is not a scanned image or password protected.' }, { status: 400 });
     }
 
-    // 2. Ask Qwen AI to analyze the bill
     const prompt = `You are an expert legislative analyst for the Indian state of Uttarakhand. 
     Analyze the following text extracted from a legislative bill PDF.
     
@@ -65,7 +62,6 @@ export async function POST(req: NextRequest) {
     rawContent = rawContent.replace(/```json/g, '').replace(/```/g, '').trim();
     const aiData = JSON.parse(rawContent);
 
-    // 3. Save to Supabase
     const { data, error } = await supabase
       .from('bills')
       .insert({

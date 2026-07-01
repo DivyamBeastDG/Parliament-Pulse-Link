@@ -46,7 +46,6 @@ export default function BillsPage() {
     try {
       const res = await fetch('/api/upload-bill', { method: 'POST', body: formData });
       
-      // 🕵️‍♂️ CATCH SERVER ERRORS (Like 413 Payload Too Large)
       if (!res.ok) {
         const errorText = await res.text();
         throw new Error(errorText || `Server responded with status ${res.status}`);
@@ -60,7 +59,6 @@ export default function BillsPage() {
         alert('❌ AI Processing Error: ' + data.error);
       }
     } catch (err: any) {
-      // 👇 This will now show the EXACT reason it failed!
       alert('❌ Upload failed: ' + err.message);
       console.error('Upload Error Details:', err);
     } finally {
