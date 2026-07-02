@@ -3,6 +3,7 @@ import './globals.css';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { LanguageProvider } from '@/hooks/useLanguage';
+import { NavbarAuthButton } from '@/components/NavbarAuthButton';
 
 export const metadata: Metadata = {
   title: 'Parliament Pulse Link — Uttarakhand',

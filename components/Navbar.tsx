@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { LanguageToggle } from './LanguageToggle';
 import { useLanguage } from '@/hooks/useLanguage';
 import anime from 'animejs';
-
+import { NavbarAuthButton } from '@/components/NavbarAuthButton';
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const { t } = useLanguage();
@@ -37,6 +37,7 @@ export function Navbar() {
             <Link href="/search" className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-bg-elevated border border-border-subtle hover:border-border-hover transition-all text-sm text-text-secondary">
               <Search className="w-4 h-4" /> <span>{t('nav.search')}</span>
             </Link>
+            <NavbarAuthButton />
           </div>
 
           <button className="md:hidden text-text-secondary" onClick={() => setIsOpen(!isOpen)}>
