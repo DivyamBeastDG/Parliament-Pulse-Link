@@ -3,16 +3,16 @@ import { supabase } from '@/lib/supabase';
 import OpenAI from 'openai';
 import { extractText } from 'unpdf'; 
 
-const client = new OpenAI({
-  baseURL: "https://openrouter.ai/api/v1",
-  apiKey: process.env.OPENROUTER_API_KEY,
-  defaultHeaders: { 'HTTP-Referer': process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000', 'X-Title': 'Parliament Pulse Link' }
-});
-
-export const maxDuration = 60; 
+export const maxDuration = 60;
 
 export async function POST(req: NextRequest) {
   try {
+    const client = new OpenAI({
+      baseURL: "https://openrouter.ai/api/v1",
+      apiKey: process.env.OPENROUTER_API_KEY,
+      defaultHeaders: { 'HTTP-Referer': process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000', 'X-Title': 'Parliament Pulse Link' }
+    });
+
     const formData = await req.formData();
     const file = formData.get('file') as File;
     if (!file || file.type !== 'application/pdf') return NextResponse.json({ error: 'Valid PDF required.' }, { status: 400 });
