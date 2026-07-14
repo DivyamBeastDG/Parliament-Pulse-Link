@@ -1,17 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
 
-const client = new OpenAI({
-  baseURL: "https://openrouter.ai/api/v1",
-  apiKey: process.env.OPENROUTER_API_KEY,
-  defaultHeaders: {
-    'HTTP-Referer': process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000',
-    'X-Title': 'Parliament Pulse Link',
-  }
-});
-
 export async function POST(req: NextRequest) {
   try {
+    const client = new OpenAI({
+      baseURL: "https://openrouter.ai/api/v1",
+      apiKey: process.env.OPENROUTER_API_KEY,
+      defaultHeaders: {
+        'HTTP-Referer': process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000',
+        'X-Title': 'Parliament Pulse Link',
+      }
+    });
+
     const { text, targetLang } = await req.json();
     if (!text) return NextResponse.json({ error: 'Text is required' }, { status: 400 });
 
