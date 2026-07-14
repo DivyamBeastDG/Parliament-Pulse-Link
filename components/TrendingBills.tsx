@@ -56,7 +56,7 @@ export function TrendingBills() {
         <div className="p-12 rounded-xl bg-bg-elevated/50 border border-dashed border-border-strong flex flex-col items-center justify-center text-center">
           <Database className="w-12 h-12 text-text-muted mb-4" />
           <h3 className="text-lg font-semibold text-text-primary mb-2">No Live Data Yet</h3>
-          <p className="text-sm text-text-secondary mb-6 max-w-md">Go to the Bills Archive and click <strong className="text-accent">"Sync Live Data"</strong>.</p>
+          
         </div>
       )}
 
